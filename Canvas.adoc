@@ -160,6 +160,4 @@ image::https://github.com/NER34/Canvas/blob/master/Picturies/ukoncene_hodinky.pn
 [%hardbreaks]
 === Zdrojový kod:
 
-link:https://github.com/NER34/Canvas/blob/master/clock/clock.js[clock.js]
-
-link:https://github.com/NER34/Canvas/blob/master/clock/instructions.json[instructions.json]
+link:https://github.com/NER34/Canvas/tree/master/clock[clock]
