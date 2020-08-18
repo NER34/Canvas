@@ -1,6 +1,6 @@
 === Design aplikace. Práce s canvasem
 
-Podíváme se na práce s canvasem. Za příklad vezmeme hodinky. Vytvoříme  složku "clock" a dva soubory uvnitř: instruction.json a clock.js. 
+Podíváme se na práce s canvasem. Za příklad vezmeme hodinky. Vytvoříme  složku "clock" a dva soubory uvnitř: instructions.json a clock.js. 
 
 Napíšeme JSON soubor. 
  
@@ -160,6 +160,6 @@ image::https://github.com/NER34/Canvas/blob/master/Picturies/ukoncene_hodinky.pn
 [%hardbreaks]
 === Zdrojový kod:
 
-link:instruktion.json
+link:https://github.com/NER34/Canvas/blob/master/clock/clock.js[clock.js]
 
-clock.js link na soubor
+link:https://github.com/NER34/Canvas/blob/master/clock/instructions.json[instructions.json]
