@@ -1,0 +1,165 @@
+=== Design aplikace. Práce s canvasem
+
+Podíváme se na práce s canvasem. Za příklad vezmeme hodinky. Vytvoříme  složku "clock" a dva soubory uvnitř: instruction.json a clock.js. 
+
+Napíšeme JSON soubor. 
+ 
+[source,json]
+ {
+   "main_script": "clock.js",
+   "width": 200,
+   "height": 200,
+   "animation": true,
+   "resize":  "proportional",
+   "title": "Clock",
+ }
+ 
+Potřebujeme čtvereční okno. Parametr `animation` musí být zapnutý. Přidáme parametr `resize` a nastavíme ho na proporcionální změnu velikosti okna. 
+
+Dále prohlížíme soubor clock.js.
+ 
+[source,javascript]
+  var clock = SAGE2_App.extend({
+      init: function (data) {},
+      resize: function (date) {},
+      draw: function (date) {},
+      drawLine: function (x0, y0, x1, y1) {},
+      drawClockFace: function () {},
+      drawClockHands: function () {},
+  });
+
+Na začátku funkce inicializator:
+ 
+[source,javascript]
+    init: function (data) {
+        // Vytváří canvas pro danou aplikaci
+        this.SAGE2Init("canvas", data);
+        // Povoluje spuštění funkce resize() při změně velikosti okna
+        this.resizeEvents = "continuous"; 
+        // Ukládá context
+        this.ctx = this.element.getContext("2d");
+        // Spušťuje funkce resize(date)
+        this.sendResize(this.element.width * 2, this.element.height * 2);
+    },
+    
+Tady se inicializuje canvas a jeho kontext se ukládá do parametru `this.ctx`. Řádek `this.resizeEvents = "continuous";`
+povoluje automatické volání funkce `resize(date)` při změně velikosti okna. Nakonec zavoláme funkce `sendResize(width, height)`, která mění velikost okna a tím spustíme `resize(date)`.
+ 
+[source,javascript]
+    resize: function (date) {
+        // Poprvé iniciaizují parametry. Dále jen upravuje je.
+        this.radius = this.element.width / 2;
+        this.center_x = this.radius;
+        this.center_y = this.radius;
+        // Spušťuje funkce draw()
+        this.refresh(date);
+    },
+
+Tato funkce se volá při změně velikosti okna. Poprve tato je proinicializuje parametry. Funkce `refresh(date)`, kterou zavoláme na konci sílou spustí funkce `draw(date)`
+ 
+Proč parametry `center_x` a `center_y` se rovnají poloměru kružnice? Je to y toto důvodu, že naše vypočty se opírají na to, že nulový bod se nachází uprostřed okna, ve skutečnosti je však v levém horním rohu.
+ 
+[source,javascript]
+    draw: function (date) {
+        // Kreslí cifernik
+        this.drawClockFace();
+        // Kreslí ručička
+        this.drawClockHands();
+    },
+    
+Funkce `draw(date)` se volá jednou za frame. Zabývá se zobrazením hodinek na obrazobce. Snadněj bude rozdělit celý proces na kreslení ciferniku a ručiček.
+
+Funkce `drawLine(x0, y0, x1, y1)` Provedé čáru od bodu (x0, y0) do (x1, y1). 
+
+[source,javascript]
+    drawLine: function (x0, y0, x1, y1) {
+        // Otevírá blok. Všechno, co bude nakresleno uvnítř bloku stane současti jedné figury
+        this.ctx.beginPath();
+        // Přenesé pero na pozici (x0, y0)
+        this.ctx.moveTo(x0, y0);
+        // Nakreslí čáru od současné pozici pera do bodu (x1, y1)
+        this.ctx.lineTo(x1, y1);
+        // Obárví vysledek a uzavřé blok
+        this.ctx.stroke();
+    },
+    
+Contextová metoda `beginPath()` otevírá blok. 
+Všechno, co bude nakresleno uvnítř tohoto bloku stane jednou figurou. Uzavřit blok lze buď contextovou metodou `stroke()` (zanechat obrys) nebo `fill()` (vuplnit nějakou bárvou).
+Funkce `moveTo(x, y)` přenese "pero" na ukázaný bod a funkce `lineTo(x, y)` provede čáru z bodu, kde se nacházelo pero do ukázaného ve funkci bodu. `lineTo(x, y)` ne kreslí čáry a jen provádí je. Kreslením se zabývají `fill()` a `stroke()`.
+
+Funkce `drawClockFace()` slouží pro kreslení ciferniku hodinek. 
+
+[source,javascript]
+        // Kreslí bílé kružnice cíferniku
+        this.ctx.fillStyle = "white";
+        this.ctx.beginPath();
+        // Kreslí oblouk ze středem (this.radius, this.radius), radiusem "this.radius".
+        // Začíná se od 0 a končí se 2 * Pi rad ve směru hodinových ručiček.
+        this.ctx.arc(this.center_x, this.center_y, this.radius, 0, Math.PI * 2, true);
+        this.ctx.fill();
+
+Začneme tím, že nakreslíme bílý kruh s poloměrem jedna polovina šířky okna. Uvnitř bloku jsme vytvořili kružnice ponoci metody 
+`arc(x, y, poloměr, počáteční úhel, koncový úhel, směr) a vyplnili je bílou bárvou.`
+
+image::bily_kruh.png[]
+
+[%hardbreaks]
+Dále v ciklu kreslíme čáry a čísla. Ale před tím potřebujeme nastavit vzhled čár a textu. Udělat to můžeme pomoci contextových parametrů.
+
+[source,javascript]
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = "grey";
+        this.ctx.fillStyle = "black";
+        this.ctx.font = "16px serif";
+
+Parametr `lineWidth` odpovídá šířce čár, `strokeStyle` obsahuje v sobě barvu obrysu, `fillStyle` je barvou, kterou vyplňují figury a `font` je velikost a styl písma.
+
+Abychom mohli nakreslit čáry potřebujeme znát ůhel. Z ůhlu výpočtéme první bod pomoci sinu a cosinu, a zatím vynásobíme ho nějakým koeficientem menším než 1, tím dostaneme druhý bod a nakreslíme čáru pomocí naší funkce `drawLine(x0, y0, x1, y1)`. Stejným způsobem najdeme bod, ve kterém bude číslo a nakreslíme ho pomoci kontextové metody `fillText(text, x, y)`
+
+image::cary_a_cisla.png[]
+
+[%hardbreaks]
+Na konci uděláme dekoráční rameček z černé kružnici. Udělame to skoro stejným způsobem, jak jsme kreslili bílý kruh ciferniku, ale místo `fill()` budeme používat metodu `stroke()`.
+
+[source,javascript]
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 5;
+        this.ctx.beginPath();
+        this.ctx.arc(this.center_x, this.center_y, this.radius, 0, Math.PI * 2, true);
+        this.ctx.stroke();
+
+image::ukonceny_cifernik.png[]
+
+[%hardbreaks]
+Funkce `drawClockHands()` se zabývá kreslením ručíček. Algoritmus je skoro stejný, jako při kreslení čár ciferniku. Hledame úhel, zatím bod pomoci sinu a cosinu nalezneme bod na kružnici a provedeme čáru od centru do tohoto bodu. 
+
+[source,javascript]
+        // Uchvává čás
+        let time = new Date();
+        let second = time.getSeconds();
+        // Na základě čásu vypočítá úhel ručiček
+        let secondAngle = second * 6 - 90;
+        // Vypočet bodů
+        let second_x0 = this.radius * Math.cos((Math.PI / 180) * secondAngle);
+        let second_y0 = this.radius * Math.sin((Math.PI / 180) * secondAngle);
+        // Kreslí sekundová ručička 
+        this.ctx.lineCap = "round";
+        this.ctx.strokeStyle = "red";
+        this.ctx.lineWidth = 2;
+        this.drawLine(this.center_x, this.center_y, second_x0 + this.center_x, second_y0 + this.center_y);
+
+image::sekundni_rucicko.png[]
+
+[%hardbreaks]
+Poslední contextový parametr, který jsme tady ne probrali je `lineCap`. Je odpovídá za to, jak budou vypadat konce čárek. V našem připadě jsou zaokrouhlené.
+
+Opakujeme tento krok se všema ručičkama a nakreslime uprostřed dekorační žlutý kruh stejným způsobem, jak jsme to udělali pro bíly kruh ciferniku.
+
+image::ukoncene_hodinky.png[]
+
+[%hardbreaks]
+=== Zdrojový kod:
+
+instruktion.json link na soubor
+
+clock.js link na soubor

@@ -1,0 +1,9 @@
+{
+  "main_script": "clock.js",
+  "width": 200,
+  "height": 200,
+  "animation": true,
+  "resize":  "proportional",
+  "title": "Clock",
+  "author": "Pavel Plotnikau"
+}
