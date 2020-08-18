@@ -101,7 +101,7 @@ Funkce `drawClockFace()` slouží pro kreslení ciferniku hodinek.
 Začneme tím, že nakreslíme bílý kruh s poloměrem jedna polovina šířky okna. Uvnitř bloku jsme vytvořili kružnice ponoci metody 
 `arc(x, y, poloměr, počáteční úhel, koncový úhel, směr) a vyplnili je bílou bárvou.`
 
-image::bily_kruh.png[]
+image::https://github.com/NER34/Canvas/blob/master/Picturies/bily_kruh.png[]
 
 [%hardbreaks]
 Dále v ciklu kreslíme čáry a čísla. Ale před tím potřebujeme nastavit vzhled čár a textu. Udělat to můžeme pomoci contextových parametrů.
@@ -116,7 +116,7 @@ Parametr `lineWidth` odpovídá šířce čár, `strokeStyle` obsahuje v sobě b
 
 Abychom mohli nakreslit čáry potřebujeme znát ůhel. Z ůhlu výpočtéme první bod pomoci sinu a cosinu, a zatím vynásobíme ho nějakým koeficientem menším než 1, tím dostaneme druhý bod a nakreslíme čáru pomocí naší funkce `drawLine(x0, y0, x1, y1)`. Stejným způsobem najdeme bod, ve kterém bude číslo a nakreslíme ho pomoci kontextové metody `fillText(text, x, y)`
 
-image::cary_a_cisla.png[]
+image::https://github.com/NER34/Canvas/blob/master/Picturies/cary_a_cisla.png[]
 
 [%hardbreaks]
 Na konci uděláme dekoráční rameček z černé kružnici. Udělame to skoro stejným způsobem, jak jsme kreslili bílý kruh ciferniku, ale místo `fill()` budeme používat metodu `stroke()`.
@@ -128,7 +128,7 @@ Na konci uděláme dekoráční rameček z černé kružnici. Udělame to skoro 
         this.ctx.arc(this.center_x, this.center_y, this.radius, 0, Math.PI * 2, true);
         this.ctx.stroke();
 
-image::ukonceny_cifernik.png[]
+image::https://github.com/NER34/Canvas/blob/master/Picturies/ukonceny_cifernik.png[]
 
 [%hardbreaks]
 Funkce `drawClockHands()` se zabývá kreslením ručíček. Algoritmus je skoro stejný, jako při kreslení čár ciferniku. Hledame úhel, zatím bod pomoci sinu a cosinu nalezneme bod na kružnici a provedeme čáru od centru do tohoto bodu. 
@@ -148,18 +148,18 @@ Funkce `drawClockHands()` se zabývá kreslením ručíček. Algoritmus je skoro
         this.ctx.lineWidth = 2;
         this.drawLine(this.center_x, this.center_y, second_x0 + this.center_x, second_y0 + this.center_y);
 
-image::sekundni_rucicko.png[]
+image::https://github.com/NER34/Canvas/blob/master/Picturies/sekundni_rucicko.png[]
 
 [%hardbreaks]
 Poslední contextový parametr, který jsme tady ne probrali je `lineCap`. Je odpovídá za to, jak budou vypadat konce čárek. V našem připadě jsou zaokrouhlené.
 
 Opakujeme tento krok se všema ručičkama a nakreslime uprostřed dekorační žlutý kruh stejným způsobem, jak jsme to udělali pro bíly kruh ciferniku.
 
-image::ukoncene_hodinky.png[]
+image::https://github.com/NER34/Canvas/blob/master/Picturies/ukoncene_hodinky.png[]
 
 [%hardbreaks]
 === Zdrojový kod:
 
-instruktion.json link na soubor
+link:instruktion.json
 
 clock.js link na soubor
